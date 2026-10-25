@@ -3231,6 +3231,13 @@ public sealed partial class Emitter
 
     private void EmitPostfixUnary(PostfixUnaryExpressionSyntax postfix)
     {
+        // C# null-forgiving is a compile-time annotation, not JavaScript syntax.
+        if (postfix.IsKind(SyntaxKind.SuppressNullableWarningExpression))
+        {
+            EmitExpression(postfix.Operand);
+            return;
+        }
+
         // C# 14 instance `operator ++()` / `operator --()`: a call that mutates the operand.
         if (TryEmitInstanceOperator(postfix, postfix.Operand, null)) return;
 
